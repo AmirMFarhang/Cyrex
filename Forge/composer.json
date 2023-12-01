@@ -1,0 +1,20 @@
+{
+    "name": "compo/cyrex",
+    "description": "modular high performance php framework",
+    "autoload": {
+        "psr-4": {
+            "Cyrex\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "AmirMFarhang",
+            "email": "amirmohammadfarhang83@gmail.com"
+        }
+    ],
+    "require": {
+      "ext-fileinfo": "*"
+    },
+    "bin": ["forge"],
+    "minimum-stability": "dev"
+}

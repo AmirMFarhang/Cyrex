@@ -1,0 +1,41 @@
+/* style.css */
+
+/* Style for the body element */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: aqua;
+    background: #0078d4;
+}
+
+/* Style for a container div */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+}
+
+/* Style for headings */
+h1 {
+    color: red;
+}
+
+/* Style for paragraphs */
+p {
+    line-height: 1.4;
+    color: #555;
+}
+
+/* Style for links */
+a {
+    color: #0078d4;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}

@@ -1,0 +1,37 @@
+#!/usr/bin/env php
+<?php
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+use Cyrex\Commands\DatabaseCommand;
+use Cyrex\Commands\InitCommand;
+use Cyrex\Commands\CreateCommand;
+use Cyrex\Commands\DoctorCommand;
+
+$command = $argv[1] ?? null;
+$args = array_slice($argv, 2);
+switch ($command) {
+    case 'init':
+        $init = new InitCommand();
+        $init->handle($args);
+        break;
+
+    case 'create':
+        $create = new CreateCommand();
+        $create->handle($args);
+        break;
+
+    case 'database':
+        $userControllerCommand = new DatabaseCommand();
+        $userControllerCommand->handle($args);
+        break;
+
+    case 'doctor':
+        $doctor = new DoctorCommand();
+        $doctor->handle($args);
+        break;
+
+    default:
+        echo "Command not found." . PHP_EOL;
+        break;
+}
