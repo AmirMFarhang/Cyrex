@@ -77,12 +77,11 @@ class AppController
         $response->setheader("Access-Control-Allow-Headers", "Content-Type, Authorization");
         if ($this->Conf->IsDebug)
         {
-//            var_dump($request);
+//            var_dump($request->post);
             // var_dump($request->files);
         }
         if($this->Conf->API->ActionNumberAPI) {
-            $var = $request->post['action'];
-            if (isset($this->ApiList[$request->post['action']])) {
+            if (isset($request->post['action']) && isset($this->ApiList[$request->post['action']])) {
                 $api = $this->ApiList[$request->post['action']];
                 // $api[0] contains the action name (e.g., 'index')
                 // $api[1] contains the controller name (e.g., 'ExampleController')
@@ -91,30 +90,44 @@ class AppController
                 $this->$controllerName->Response = $response;
                 $this->$controllerName->Request = $request;
                 $this->$controllerName->$actionName();
-                return;
-            } else {
+            }
+            else {
+                if($this->Conf->API->AllMethod)
+                    goto Get;
                 // Handle the case where the requested API doesn't exist
                 print_r("API not found");
                 $response->status('403');
                 $response->end();
-                return;
             }
+            return;
         }
+        Get:
+        print_r($request->server['request_uri']. " \n");
         //URL based API
         $path = $request->server['request_uri'];
         // Remove leading and trailing slashes and explode the URL
         $parts = explode('/', trim($path, '/'));
-        $controllerName = ucfirst($parts[0]) . 'Controller';
-        if(count($parts) >= 1)
+        var_dump($parts);
+
+        $controllerName = ucfirst($parts[count($parts) - 2]) . 'Controller';
+
+        if(count($parts) == 0)
+
         {
             //index
-//            $response->header('Content-Type', 'text/html; charset=utf-8');
-//            // Read and send the HTML content
-//            $htmlContent = file_get_contents('./View/index.html'); // Replace with your file path
-//            $response->end($htmlContent);
+            $response->header('Content-Type', 'text/html; charset=utf-8');
+            // Read and send the HTML content
+            $htmlContent = file_get_contents('./View/index.html'); // Replace with your file path
+            $response->end($htmlContent);
+            return;
         }
-        if($request->post == null && $request->get == null)
+
+        else if($request->post == null && $request->get == null)
         {
+            if($parts[0] == 'App' && count($parts) >= 3)
+                goto App;
+            print_r("in front \n");
+
             if($path == '/')
             {
                 $path = "/index.html";
@@ -154,24 +167,27 @@ class AppController
                 $response->end();
                 return;
             }
-
-            return;
         }
         // Ensure there are at least two parts (controller and method)
-        if (count($parts) >= 2) {
-            $methodName = $parts[1];
-
+        else if (count($parts) >= 2) {
+            App:
+            $methodName = $parts[count($parts) - 1];
+            print_r("inside \n");
 
             // Check if the method exists
             if (method_exists($this->$controllerName, $methodName)) {
                 // Call the appropriate method
+                $this->$controllerName->Response = $response;
+                $this->$controllerName->Request = $request;
                 $content = $this->$controllerName->$methodName();
                 $response->end($content);
             } else {
                 $response->status(404);
-                $response->end("Not Found");
+                $response->end("API Not Found");
             }
-        } else {
+        }
+
+        else {
             $res = "
    _____                    
   / ____|                   
@@ -185,6 +201,7 @@ class AppController
             $response->end($res);
         }
     }
+
     public function StartApp($server)
     {
         print_r("Cyrex server has started!");
